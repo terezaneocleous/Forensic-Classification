@@ -23,7 +23,7 @@ library(mlbench)
 library(nnet)
 library(gridExtra)
 
-#setwd("~/OneDrive - University of Glasgow/RA/ForApp")
+# set working directory and source functions_rshiny.R 
 source("functions_rshiny.R")
 st_options("round.digits")
 data("Glass")
