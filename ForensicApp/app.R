@@ -4,7 +4,7 @@ library(shiny)
 library(DT)
 library(dplyr)
 library(ggplot2)
-library(ggthemr) 
+library(ggthemr)
 library(shinyBS)
 library(rio)
 library(GGally)
@@ -23,7 +23,7 @@ library(mlbench)
 library(nnet)
 library(gridExtra)
 
-# set working directory and source functions_rshiny.R 
+# set working directory and source functions_rshiny.R
 source("functions_rshiny.R")
 st_options("round.digits")
 data("Glass")
@@ -31,134 +31,132 @@ data("BreastCancer")
 data("PimaIndiansDiabetes")
 
 #theme_set(theme_bw(base_size = 18))
-# install_formats()   # to install formats for use with rio import() functions
 
 #ggthemr('light', layout = 'clear', spacing = 1)
 ggthemr('solarized', layout = 'clear', spacing = 1, text_size = 14)
-#ggthemr('pale', layout = 'clear', spacing = 1)
 
 # Define UI for application that draws the app layout and components
 ui <- navbarPage( theme = shinytheme("flatly"),
-    
+
     title = "Forensic Classification",
-                 
+
     ###############################################################
     # About tab
-    tabPanel(title = "Home", 
+    tabPanel(title = "Home",
              icon = icon("home", "fa"),
-             
-             tabsetPanel( tabPanel("About this app", 
+
+             tabsetPanel( tabPanel("About this app",
                                    tags$br(),
                                    tags$p(
                                        tags$img(height = 50, src = "UoG.png")),
                                    tags$h1("Introduction"),
                                    tags$body("This app was produced in June 2019..."),
                                    tags$h1("Aim"),
-                                   tags$body("This app provides a flexible tool for classification to be used with forensic data and beyond. 
+                                   tags$body("This app provides a flexible tool for classification to be used with forensic data and beyond.
                                               The app allows the user to input their own dataset in a .txt or .csv format."  ),
                                    tags$h1("Methodology"),
                                    tags$body("A variety of state-of-the-art classification methods are implemented in this app, which are accompanied by useful numerical and visual summaries:",
-                                             tags$ul( tags$li(" "), 
+                                             tags$ul( tags$li(" "),
                                                       tags$li(" "),
                                                       tags$li(" "),
                                                       tags$li(" ")
-                                                      
+
                                                     ),
                                              " For more details about the methods available in this app, please refer to our paper ...",
                                              " You can reference this app like this ... (download reference here)."
-                                             
+
                                              )
-                                    
-                                   ), 
-                          
-                          tabPanel("Credits", 
+
+                                   ),
+
+                          tabPanel("Credits",
                                    tags$br(),
                                    "We thank ", tags$em("Dimitra Eleftheriou"), " and ",
                                     tags$a( href ="https://chenjr-jacob.idv.tw", "Jacob Chen.")
                                    )
                         )
-             
+
              ),
-    
-    ###############################################################  
+
+    ###############################################################
     # Data tab
-    tabPanel(title = "Data", 
+    tabPanel(title = "Data",
              icon = icon( "database"),
-             
-             
+
+
              sidebarLayout(
                 sidebarPanel(width = 3,
-             
+
                         h5(strong("Data set selection")),
-              
-                        selectInput("dataset", label = NULL, 
-                               choices = c( "", "Iris", "Diamonds", "Glass","Diabetes", "Upload data")), 
-                        
+
+                        selectInput("dataset", label = NULL,
+                               choices = c( "", "Iris", "Diamonds", "Glass","Diabetes", "Upload data")),
+
                         uiOutput("UpSelect") ,
-             
-                        br(),       
-   
+
+                        br(),
+
                         actionButton("GoData", label = "Select/ upload data",icon("file-import"), width = '100%',
-                                     style="color: #fff; background-color: #28bb9b; border-color: #87d5c5" ), 
-                        
+                                     style="color: #fff; background-color: #28bb9b; border-color: #87d5c5" ),
+
                         hr(style="border-color: black;"),
-                        
+
                         bsTooltip("dataset", "Select an exisiting data set or upload your own", placement = "top", trigger = "hover",
                                     options = NULL),
-                        
+
                         h5(strong("Data summaries")),
-                        
+
                         checkboxInput( "checkNum", label = "Numerical summaries", value = FALSE),
-                        
+
                         checkboxInput( "checkCat", label = "Frequency summaries", value = FALSE),
-                        
+
                         uiOutput("CatVariableSum"),
-                        
-                        hr(style="border-color: black;"), 
-                        
+
+                        hr(style="border-color: black;"),
+
                         h5(strong("Exploratory plots options")),
-                        
-                        uiOutput( "Variable_select" ) %>% withSpinner(color="#0dc5c1") 
-                        
+
+                        uiOutput( "Variable_select" ) %>% withSpinner(color="#0dc5c1")
+
                         ),
-                
+
                 mainPanel(
-                    
+
                      tabsetPanel(
                          id = 'DatasetSummaries',
-                         
+
                          tabPanel(h5( strong("Data table") ), value = "DataTable",
                                   tags$br(),
                                   DT::dataTableOutput("DataTab") %>% withSpinner(color="#0dc5c1")
                                   ),
-                         
-                  
+
+
                          tabPanel(h5( strong("Data summaries") ), value = "DataSum",
                                   tags$br(),
-                                     
+
                                   h5( "Numerical variables summary"),
                                   tags$br(),
                                   DT::dataTableOutput("DataSumN") %>% withSpinner(color="#0dc5c1"),
-                                  
-                                  tags$br(),         
-                                  
+
+                                  tags$br(),
+
                                   h5( "Categorical variables summary"),
                                   tags$br(),
                                   column(8,
                                   uiOutput("Freq") )#  %>% withSpinner(color="#0dc5c1"))
                                   ),
-                                            
+
                           tabPanel( h5( strong("Exploratory plots")), value = "DataPlots",
-                                plotOutput("ExPlot") %>% withSpinner(color="#0dc5c1") 
-                                            )     
-                                
+                                plotOutput("ExPlot") %>% withSpinner(color="#0dc5c1")
+                                            )
+
                         )
                     )
              )),
-                    
-                  
-                    
-            
+
+
+
+
     # ###############################################################
     # # Classification tab
     tabPanel(title = "Classification",
@@ -166,17 +164,17 @@ ui <- navbarPage( theme = shinytheme("flatly"),
 
              sidebarLayout(
                  sidebarPanel(width = 3,
-                              
+
                         selectInput("method", label = h5( strong("Classification method")),
-                                                    choices = c( "LDA","QDA", "Logistic regression", "Firth logistic regression", "Multinomial logistic regression" #, 
+                                                    choices = c( "LDA","QDA", "Logistic regression", "Firth logistic regression", "Multinomial logistic regression" #,
                                                                  #"kNN", "SVM", "Random forest", "Decision trees", "Naive Bayes classifier", "Neural networks"
                                                                  )),
                         uiOutput("VariableSelectX"),
                         uiOutput("VariableSelectY"),
-                            
-                        bsCollapse(id = "collapseExample", open = "Panel 2", 
-                                    bsCollapsePanel("Advanced options", 
-                                       # numericInput("CvFold", "Enter the cross validation fold", 1, min = 1 ),                         
+
+                        bsCollapse(id = "collapseExample", open = "Panel 2",
+                                    bsCollapsePanel("Advanced options",
+                                       # numericInput("CvFold", "Enter the cross validation fold", 1, min = 1 ),
                                         numericInput("DataSplit", "Enter the training percentage split", 50, min = 1),
                                         numericInput("RandSeed", "Enter random seed number", 23, min = 0 )  )
                                    ),
@@ -188,24 +186,24 @@ ui <- navbarPage( theme = shinytheme("flatly"),
                                                 options = NULL),
                         actionButton("GoClassify", label = "Run model", icon("play"), width = '100%',
                                      style="color: #fff; background-color: #28bb9b; border-color: #87d5c5" ),
-                        
+
                         hr(style="border-color: black;"),
-                        
+
                         h5( strong("Predictions")),
-                        fileInput("PredData", "Upload file containing new data", 
+                        fileInput("PredData", "Upload file containing new data",
                                   accept = c( "text/csv",  "text/comma-separated-values,text/plain", ".csv")  ),
                         actionButton("GoPredUpload", "Predict", icon("file-import"), width = '100%',
                                      style="color: #fff; background-color: #28bb9b; border-color: #87d5c5" ),
                         h5( strong("Prediction plot")),
                         uiOutput("VariableSelectPlot"),
                         hr(style="border-color: black;")
-                        
+
                         ),
-                            
+
             mainPanel(
                     tabsetPanel(
                          id = 'AnalysisSummaries',
-        
+
                     tabPanel(h5(strong("Analysis results")), value = "tAnalysis",
                              verbatimTextOutput("ClassOutput")
                             ),
@@ -216,45 +214,45 @@ ui <- navbarPage( theme = shinytheme("flatly"),
                              DT::dataTableOutput("testing_set")%>% withSpinner(color="#0dc5c1"),
                              "Maybe some plots showing the percentages of data allocated to train/test"
                             ),
-                    
-                                 
-                                 
-                        
+
+
+
+
                     tabPanel(h5(strong("Plots")),
                                   splitLayout(
                                       uiOutput( "ClassPlot")
                                     )
                                   ),
-        
+
                     tabPanel(h5(strong("Classification performance")),
                                   h4("Overall performance measures"),
                                   verticalLayout( column( 3, h5("Misclassification matrix")) ,
                                                   column( 3, DT::dataTableOutput("ConfMat")%>% withSpinner(color="#0dc5c1") ),
                                                   column( 9, h5("Overall statistics")),
                                                   column( 9, DT::dataTableOutput("OverKappa")%>% withSpinner(color="#0dc5c1") )),
-                                  br(),               
+                                  br(),
                                   h4("Performance measures by class") ,
                                   verticalLayout( column( 9, DT::dataTableOutput("ByClass") %>% withSpinner(color="#0dc5c1") )
                                   )),
-        
-                    tabPanel(h5(strong("Predictions")), value = "tPred", 
+
+                    tabPanel(h5(strong("Predictions")), value = "tPred",
                                   fluidRow(
-                                            h5(strong("Model predictions")), 
+                                            h5(strong("Model predictions")),
                                             DT::dataTableOutput("PredDataTab") %>% withSpinner(color="#0dc5c1"),
                                             tags$style(type="text/css", "#PredDataTab td:nth-child(1) {text-align:center;background-color:#ffd800;color: black;text-align:center}"),
                                             tags$style(type="text/css", "#PredDataTab td:nth-child(2) {text-align:center;background-color:#ffb000;color: black;text-align:center}"),
-                                            tags$br(),                                            
+                                            tags$br(),
                                             h5(strong("Plot predictions")),
                                             plotOutput("PredPlot") %>% withSpinner(color="#0dc5c1")
                                           #"TBC - user can choose what plot they want to display the predicted data"
                                             )
                             ),
-                                  
-                                  
-                                  
-                                 
+
+
+
+
                     tabPanel(h5(strong("R output")),
-                                  
+
                                   verbatimTextOutput("AnalysisRes")
                                  ))
                         )
@@ -262,39 +260,39 @@ ui <- navbarPage( theme = shinytheme("flatly"),
     ),
 
     ########################
-    # Evidence 
+    # Evidence
     tabPanel( title = "Evidence evaluation",
               icon = icon( "balance-scale"),
-              
+
               sidebarLayout(
                   sidebarPanel(width = 3,
                                 selectInput("EviMethod", label = h5( strong("Evidence method")),
                                            choices = c( "Firth GLM" = "firth", "Bayes GLM" = "bayes", "GLM Net" = "net"), multiple = T),
-                                checkboxGroupInput("EviOptions",  label = h5( strong("LR estimation type")),  
+                                checkboxGroupInput("EviOptions",  label = h5( strong("LR estimation type")),
                                                   choices = c( "Univariate Gaussian LR" = "gaussian", "Univariate KDE LR" = "kernel", "Multivariate Gaussian LR -- coming soon" = "mgaussian"), selected = 1),
-                                bsTooltip("EviOptions", "Select all options you want included in your comparison. For datasets with more than 6 variables only univariate LR options are available",       
-                                          options = NULL), 
+                                bsTooltip("EviOptions", "Select all options you want included in your comparison. For datasets with more than 6 variables only univariate LR options are available",
+                                          options = NULL),
                                 uiOutput("varsYevidence"),
-                                bsCollapse(id = "EviCV", open = "Panel 2", 
-                                          bsCollapsePanel(h5( strong("Cross validation options")), 
+                                bsCollapse(id = "EviCV", open = "Panel 2",
+                                          bsCollapsePanel(h5( strong("Cross validation options")),
                                                           textInput("pTrain", "Enter the % of data for training",   "50"),
-                                                          textInput("pValid", "Enter the % of data for validation", "30"), 
+                                                          textInput("pValid", "Enter the % of data for validation", "30"),
                                                           textInput("pTest" , "Enter the % of data for testing",    "20"),
                                                           textInput("RepeatN","Enter the number of repeated iterations", "5")
                                           )),
                                 actionButton("GoEvidence", label = "Run evidence model", icon("play"), width = '100%',
                                             style="color: #fff; background-color: #28bb9b; border-color: #87d5c5" ),
-                               
+
                                 hr(style="border-color: black;"),
-                               
+
                                 h5( strong("Predictions")),
-                                fileInput("EvidPredData", "Upload file containing new data", 
+                                fileInput("EvidPredData", "Upload file containing new data",
                                          accept = c( "text/csv",  "text/comma-separated-values,text/plain", ".csv")  ),
                                 actionButton("GoEvidPredUpload", "Upload", icon("file-import"), width = '100%',
                                             style="color: #fff; background-color: #28bb9b; border-color: #87d5c5" ),
-                               
+
                                 hr(style="border-color: black;")
-                               
+
                                 ),
                   mainPanel(
                       tabsetPanel(
@@ -314,20 +312,20 @@ ui <- navbarPage( theme = shinytheme("flatly"),
                                     fluidRow( column(6, plotOutput("EviPlots3")  %>% withSpinner(color="#0dc5c1")),
                                               column(6, plotOutput("EviPlots4")  %>% withSpinner(color="#0dc5c1"))),
                                     fluidRow( column(6, plotOutput("EviPlots5")  %>% withSpinner(color="#0dc5c1")),
-                                              column(6, plotOutput("EviPlots6")  %>% withSpinner(color="#0dc5c1"))),          
-                                    fluidRow( column(6, plotOutput("EviPlots7")  %>% withSpinner(color="#0dc5c1")))                 
+                                              column(6, plotOutput("EviPlots6")  %>% withSpinner(color="#0dc5c1"))),
+                                    fluidRow( column(6, plotOutput("EviPlots7")  %>% withSpinner(color="#0dc5c1")))
                                     ),
-                            tabPanel(h5(strong("Prediction")), value = "tEviPred", 
-                                    "Evidence prediction for new observations - coming soon" 
+                            tabPanel(h5(strong("Prediction")), value = "tEviPred",
+                                    "Evidence prediction for new observations - coming soon"
                                     )
-                          
+
                           )
                   )
               )
-              
+
               ),
-    
-    
+
+
     ###############################################################
     # Download report
     tabPanel( title = "Report",
@@ -339,22 +337,22 @@ ui <- navbarPage( theme = shinytheme("flatly"),
               "Make appropriate plots and perhaps a table comparing the selected methods' results.",
               tags$br(),
               img(src="NotReady.png", height = 300)
-              
+
               )
 )
 
-    
+
 
 
 
 
 
 ##############################################################################################################################################################
-# Define server logic required to generate objects 
+# Define server logic required to generate objects
 server <- function( input, output, session) {
-   
-   
-    
+
+
+
     ### Data set assignment
     datasetInput <- eventReactive( input$GoData, {
         switch(input$dataset,
@@ -366,18 +364,18 @@ server <- function( input, output, session) {
                "Upload data" =  import( input$UpData$datapath )
                )
     })
-    
+
     ### Numerical and categorical variables are identified and placed into different data sets
     NumData <- reactive ( { GetDataByClass ( dataset = datasetInput(), cls = "numeric")   } )
     #CatData <- reactive ( { GetDataByClass ( dataset = datasetInput(), cls = "factor")   } )
-    
+
     CatData <- reactiveVal( )
-    
-    observeEvent(input$GoData, { 
+
+    observeEvent(input$GoData, {
         d <- GetDataByClass ( dataset = datasetInput(), cls = "factor")
         CatData(d)
     } )
-    
+
     observeEvent(input$GoData, {
         claim <- CatData() # read the data from the reactiveVal
         if ( "Class" %in% colnames(claim))
@@ -385,60 +383,60 @@ server <- function( input, output, session) {
         CatData(claim) # write back the modified data to the reactiveVal
         }
     })
-    
+
     # Upload data fileInput box
-    
-    output$UpSelect <- renderUI ( { 
+
+    output$UpSelect <- renderUI ( {
         switch( input$dataset,
                 "Upload data" = fileInput("UpData", "",
                    accept = c( "text/csv", "text/comma-separated-values,text/plain", ".csv")))
-        
-        })
-    
-    
 
-    # Select variables for plotting 
-    
-    output$Variable_select <- renderUI( { 
-                
-        verticalLayout( 
-                         
+        })
+
+
+
+    # Select variables for plotting
+
+    output$Variable_select <- renderUI( {
+
+        verticalLayout(
+
                          varSelectInput("varX", h5("X variable"), NumData(), selected = names(NumData())[2])  ,
-                                 
+
                          varSelectInput("varZ", h5("Grouping variable"), CatData() ),
 
                          bsTooltip("varZ", "Choose a factor variable", placement = "top", trigger = "hover",
                                            options = NULL),
-                         
+
                          checkboxInput( "addY", label = "Add Y variable", value = FALSE) ,
-                         
-                         renderUI ( { 
+
+                         renderUI ( {
                              if( input$addY == TRUE)
-                                 varSelectInput("varY", h5("Y variable"), NumData() ) 
+                                 varSelectInput("varY", h5("Y variable"), NumData() )
                          }),
-                         
+
                          checkboxInput( "allVars", label = "Produce overall plot", value = FALSE),
-                         
+
                              tags$br(),
                              tags$br(),
                              tags$br()
-                            )  
+                            )
      })
-    
-    
+
+
     # Generate plots according to selected variables
-    
+
     output$ExPlot <- renderPlot (
-         {  
-            
+         {
+
             if ( input$allVars == FALSE)
-            {    
+            {
             if( input$addY == TRUE )
-                ggplot(datasetInput(), aes( x = !!input$varX , y = !!input$varY, colour = !!input$varZ, shape = !!input$varZ) ) + 
-                    geom_point( alpha = 0.6, size = 4) 
+                ggplot(datasetInput(), aes( x = !!input$varX , y = !!input$varY, colour = !!input$varZ, shape = !!input$varZ) ) +
+                    geom_point( alpha = 0.6, size = 4)
             else
-                ggplot(datasetInput(), aes( y = !!input$varX, colour = !!input$varZ, fill = !!input$varZ) ) + 
-                    geom_boxplot( alpha = 0.8 ) + coord_flip() 
+                ggplot(datasetInput(), aes( y = !!input$varX, colour = !!input$varZ, fill = !!input$varZ) ) +
+                    geom_boxplot( alpha = 0.8 ) + coord_flip()
             }
             else
                 ggpairs(datasetInput(), mapping = aes( fill = !!input$varZ, colour = !!input$varZ, alpha =0.8),
@@ -448,33 +446,33 @@ server <- function( input, output, session) {
 
 
     # Generate dataset table to display the input data
-    output$DataTab <- renderDataTable( { 
-       
+    output$DataTab <- renderDataTable( {
+
         DT::datatable (datasetInput(), rownames = F,
-                       options = list(lengthMenu = c(5, 10, 20), 
-                                      pageLength = 5, scrollX = TRUE ) 
+                       options = list(lengthMenu = c(5, 10, 20),
+                                      pageLength = 5, scrollX = TRUE )
                        )
         } )
-    
-    
-    ### Generating summary statistics for numerical variables 
-    output$DataSumN <- renderDataTable ( { 
+
+
+    ### Generating summary statistics for numerical variables
+    output$DataSumN <- renderDataTable ( {
         if(input$checkNum == TRUE)
-        DT::datatable (  round(descr( NumData() , stats = c( "min", "q1", "med", "mean" ,"q3", "max", "sd"), 
+        DT::datatable (  round(descr( NumData() , stats = c( "min", "q1", "med", "mean" ,"q3", "max", "sd"),
                                 transpose = TRUE, headings = FALSE, justify = "c", style = "simple"), 3),
-                         options = list(  dom = 't')  
+                         options = list(  dom = 't')
                      )
          } )
-    
 
-    ### Generating summary statistics for categorical variables 
-    
+
+    ### Generating summary statistics for categorical variables
+
     output$CatVariableSum <- renderUI( {
         if(input$checkCat == TRUE)
             selectInput("CatVar", h5("Choose your variables"), multiple = T, names( CatData() )  )
     } )
-    
-    ## Generating summary statistics for factor variables by first generating a list of dataTables 
+
+    ## Generating summary statistics for factor variables by first generating a list of dataTables
     ## based on the number of variables selected
     observeEvent(input$CatVar,  output$Freq <- renderUI({
                      lapply( as.list( seq_len( length( input$CatVar ) )), function(i) {
@@ -482,8 +480,8 @@ server <- function( input, output, session) {
                          DT::dataTableOutput( id )
                      })
                  })  )
-    
-    ## In each position of the list output$id, generate the id name and table containing summary statistics 
+
+    ## In each position of the list output$id, generate the id name and table containing summary statistics
     ## for the categorical variables selected in the "CatVar" box
     # !
     observeEvent(input$CatVar,
@@ -497,9 +495,9 @@ server <- function( input, output, session) {
                      output[[id]] <- DT::renderDataTable( f, caption = input$CatVar[i], options = list( dom = 't') )
                     }
                  )
-    
+
     ############## Analysis tab
-    
+
     # Initialize the object that contains the model outputs and inputs
     ClassRes <- reactiveValues()
        ClassRes$model <- NULL
@@ -507,13 +505,13 @@ server <- function( input, output, session) {
        ClassRes$training_dataset <- NULL
        ClassRes$testing_dataset  <- NULL
        ClassRes$testing_result   <- NULL
-       ClassRes$seed <- NULL    # make output dependant on seed if user chooses to input a seed 
+       ClassRes$seed <- NULL    # make output dependant on seed if user chooses to input a seed
        ClassRes$confusion_matrix <- NULL
        ClassRes$prediction <- NULL
 
-    # Selecting variables for class and predictors 
-       
-    output$VariableSelectX <- renderUI( { 
+    # Selecting variables for class and predictors
+
+    output$VariableSelectX <- renderUI( {
            verticalLayout(
                selectInput("varXm", h5("Choose class variable"), names(CatData())  ),
                bsTooltip("varXm", "Choose a factor (labels) variable", placement = "top", trigger = "hover",
@@ -522,70 +520,70 @@ server <- function( input, output, session) {
                #      selectInput("varXlevel", h5("Choose level"), levels( datasetInput()[, input$varXm] )  )
            )
        } )
-       
-    output$VariableSelectY <- renderUI( { 
+
+    output$VariableSelectY <- renderUI( {
            selectInput("varYm", h5("Choose predictors"), multiple = T, names(datasetInput()) [ names(datasetInput()) != input$varXm] )
        } )
-       
-   
+
+
     # Set Seed
     observeEvent( input$RandSeed,  {ClassRes$seed <- input$RandSeed
                       set.seed( input$RandSeed )
                          })
-       
-    
-    # Selecting method 
+
+
+    # Selecting method
     observeEvent( input$GoClassify,  {
-        
+
         # set seed to whatever the user input
         set.seed(ClassRes$seed )
-        
-        # split data set into testing/training 
+
+        # split data set into testing/training
         ClassRes$data <- DataTrainTest( data = datasetInput(), per = input$DataSplit)
         ClassRes$training_dataset <- as.data.frame(ClassRes$data[1])
         ClassRes$testing_dataset  <- as.data.frame(ClassRes$data[2])
-        
+
         # fit selected model
         switch(input$method,
                "LDA" =  {ClassRes$model <-  RunLDA( input$varXm, input$varYm, ClassRes$training_dataset  )
                          ClassRes$testing_result <- EvaluateLDA( ClassRes$model, ClassRes$testing_dataset ) },
-               
-               "QDA" =  {ClassRes$model <-  RunQDA( input$varXm, input$varYm, ClassRes$training_dataset  ) 
+
+               "QDA" =  {ClassRes$model <-  RunQDA( input$varXm, input$varYm, ClassRes$training_dataset  )
                          ClassRes$testing_result <- EvaluateQDA( ClassRes$model, ClassRes$testing_dataset )},
-               
+
                "Logistic regression" = {ClassRes$model <-  RunLR( input$varXm, input$varYm, ClassRes$training_dataset  )
                                         ClassRes$testing_result <- EvaluateLR( ClassRes$model, ClassRes$testing_dataset )},
-               
+
                "Firth logistic regression" = {ClassRes$model <-  RunLRF( input$varXm, input$varYm, ClassRes$training_dataset )
                                               ClassRes$testing_result <- EvaluateLRF( ClassRes$model, ClassRes$testing_dataset )},
-                                                                                
+
                "Multinomial logistic regression" =  {ClassRes$model <-  RunMLR( input$varXm, input$varYm, ClassRes$training_dataset )
-                                                     ClassRes$testing_result <- EvaluateMLR( ClassRes$model, ClassRes$testing_dataset )} #, 
-               # "kNN" = {ClassRes$model <- RunKNN(  )}, 
-               # "SVM" = {ClassRes$model <- RunSVM(   )}, 
-               # "Random forest" = {ClassRes$model <- RunRF(   )}, 
-               # "Decision trees" = {ClassRes$model <- RunDC(   )}, 
-               # "Naive Bayes classifier" = {ClassRes$model <- RunNB(   )}, 
-               # "Neural networks" = {ClassRes$model <- RunNN(   )} 
+                                                     ClassRes$testing_result <- EvaluateMLR( ClassRes$model, ClassRes$testing_dataset )} #,
+               # "kNN" = {ClassRes$model <- RunKNN(  )},
+               # "SVM" = {ClassRes$model <- RunSVM(   )},
+               # "Random forest" = {ClassRes$model <- RunRF(   )},
+               # "Decision trees" = {ClassRes$model <- RunDC(   )},
+               # "Naive Bayes classifier" = {ClassRes$model <- RunNB(   )},
+               # "Neural networks" = {ClassRes$model <- RunNN(   )}
                )
-    
+
     })
-    
+
     # Render model output for the last tab
-    output$AnalysisRes <- renderPrint( {   
+    output$AnalysisRes <- renderPrint( {
          print( paste ("Random seed set to: ", ClassRes$seed))
          print( summary(ClassRes$model) )
          print( "Prediction")
-         print( ClassRes$prediction ) 
+         print( ClassRes$prediction )
        })
-    
-    
+
+
     # Import data set for prediction
-    
+
     datasetPred <- eventReactive( input$GoPredUpload, {
-        datasetPred <- import( input$PredData$datapath )        
+        datasetPred <- import( input$PredData$datapath )
     })
-    
+
     # Predict for selected methods
     observeEvent( input$GoPredUpload,  {
         switch(input$method,
@@ -599,36 +597,36 @@ server <- function( input, output, session) {
                # "Random forest" = { },
                # "Decision trees" = { },
                # "Naive Bayes classifier" = { },
-               # "Neural networks" = { } 
+               # "Neural networks" = { }
                )
         } )
-    
+
     ### Generate dataset table to display the data upladed for prediction
-    output$PredDataTab <- renderDataTable( { 
+    output$PredDataTab <- renderDataTable( {
         dataset <- cbind( Prediction = ClassRes$prediction$class, LR =  ClassRes$prediction$LR, datasetPred() )
         DT::datatable (dataset, rownames = F,
-                       options = list(lengthMenu = c(5, 10, 15), 
-                                      pageLength = 5, scrollX = TRUE,  dom = 't'))   
+                       options = list(lengthMenu = c(5, 10, 15),
+                                      pageLength = 5, scrollX = TRUE,  dom = 't'))
     } )
-    
-    
+
+
     # Show the training and testing data sets in different tables
     output$training_set <- renderDataTable( {
         DT::datatable (ClassRes$training_dataset,
                         options = list(lengthMenu = c(5, 10, 20),
                                         pageLength = 5 ))
     } )
-    
+
     output$testing_set <- renderDataTable( {
         DT::datatable (ClassRes$testing_dataset,
                        options = list(lengthMenu = c(5, 10, 20),
                                       pageLength = 5 ))
     } )
-    
-    
-    # Results - show specific output for each method ! 
+
+
+    # Results - show specific output for each method !
     # currently displays a summary of each model
-    
+
     output$ClassOutput <- renderPrint ({
         switch(input$GoClassify,
                "LDA" =  { print( ClassRes$model)  },
@@ -645,45 +643,45 @@ server <- function( input, output, session) {
                # "Naive Bayes classifier" = {print("TBC") },
                # "Neural networks" = {print("TBC") }
         )
-        
+
     })
-    
+
     # Make specific tabs active when clicking predict and analysis/go buttons
     observeEvent( input$GoClassify, {
         updateTabsetPanel(session, "AnalysisSummaries",
                           selected = "tAnalysis")
-        
+
     })
-    
+
     observeEvent( input$GoPredUpload, {
         updateTabsetPanel(session, "AnalysisSummaries",
                           selected = "tPred")
-        
+
     })
- 
+
     observeEvent( input$checkNum | input$checkCat, {
         if( input$checkNum !=0 | input$checkCat !=0)
             updateTabsetPanel(session, "DatasetSummaries",
                               selected = "DataSum")
     })
-    
+
     observeEvent( input$GoData, {
         updateTabsetPanel(session, "DatasetSummaries",
                               selected = "DataTable")
     })
-    
+
     observeEvent( input$GoEvidence, {
         updateTabsetPanel(session, "EvidenceResults",
                           selected = "tEviRes")
-        
+
     })
-    
+
     observeEvent( input$GoEvidPredUpload, {
         updateTabsetPanel(session, "EvidenceResults",
                           selected = "tEviPred")
     })
-    
-    
+
+
     # Classification measures and confusion matrix (buggy for uploaded dataset)
     output$ConfMat   <- renderDataTable( {
 
@@ -734,32 +732,32 @@ server <- function( input, output, session) {
                                  }
                                  "))
  })
-    
-    
+
+
     # Generate plots for predicted data according to selected variables
-    output$VariableSelectPlot <- renderUI( { 
+    output$VariableSelectPlot <- renderUI( {
         verticalLayout(
             varSelectInput("varXp", h5("Choose variable for x axis"),  datasetInput() ),
             varSelectInput("varYp", h5("Choose variable for y axis"),  datasetInput(), selected = names( datasetInput() )[2] ),
             varSelectInput("varC",  h5("Choose variable for point colour"), CatData()  )
             )
     } )
-    
+
     # Prediction data plot
     output$PredPlot <- renderPlot (
-        {  
-            predSet <- cbind ( datasetPred(), ClassRes$prediction$class ) 
+        {
+            predSet <- cbind ( datasetPred(), ClassRes$prediction$class )
             colnames( predSet) [ length( colnames( predSet ))] <- input$varXm
-            ggplot( data = ClassRes$training_dataset, aes ( x = !!input$varXp , y = !!input$varYp) ) + 
+            ggplot( data = ClassRes$training_dataset, aes ( x = !!input$varXp , y = !!input$varYp) ) +
                 geom_point( alpha = 0.5, size = 2, aes( colour = !!input$varC, shape = '20')) +
-                geom_point( data = predSet, aes( x = !!input$varXp , y =  !!input$varYp, colour = !!input$varC, shape = '8'), size = 4) + 
+                geom_point( data = predSet, aes( x = !!input$varXp , y =  !!input$varYp, colour = !!input$varC, shape = '8'), size = 4) +
                 scale_shape_manual(name = 'Data', guide = 'legend', labels = c('training', 'predicted'), values = c(20, 8)) #+
             #   geom_text ( data = predSet, aes( label =!!input$varC), check_overlap = TRUE, angle = 45, size = 3)
-        
-        } ) 
-    
+
+        } )
+
     ###### Evidence tab
-    
+
     # Initialize the object that contains the model outputs and inputs
     EviRes <- reactiveValues()
     EviRes$model <- NULL
@@ -768,29 +766,29 @@ server <- function( input, output, session) {
     EviRes$testing_dataset  <- NULL
     EviRes$validation_dataset  <- NULL
     EviRes$testing_result   <- NULL
-    EviRes$seed <- NULL    # make output dependant on seed if user chooses to input a seed 
+    EviRes$seed <- NULL    # make output dependant on seed if user chooses to input a seed
     EviRes$predm <- data.frame()
 
     output$varsYevidence <- renderUI ( {
-        verticalLayout( 
+        verticalLayout(
             selectInput("varXe", label = h5( strong("Response variable")),
                             names(CatData()) ),
             varSelectInput("varYe", label = h5( strong("Explanatory variables")),
-                           NumData(), multi = T  )    
+                           NumData(), multi = T  )
         )
     })
-    
+
     observeEvent( input$GoEvidence, {
 
-    # Repetitions loop        
+    # Repetitions loop
     for ( i in 1 :  input$RepeatN ){
-        
+
         # split data set into testing/training
         EviRes$data <- DataTrainTestValid( input$varXe, data = datasetInput(), ptrain = as.numeric(input$pTrain), pvalid = as.numeric(input$pValid), ptest = as.numeric(input$pTest))
         EviRes$training_dataset   <- as.data.frame( EviRes$data[[1]])
         EviRes$testing_dataset    <- as.data.frame( EviRes$data[[2]])
         EviRes$validation_dataset <- as.data.frame( EviRes$data[[3]])
-        
+
         # #for each method, produce and store performance measure
         for ( j in 1 : length( input$EviMethod) ) {
             for( k in 1 : length( input$EviOptions) ) {
@@ -806,15 +804,15 @@ server <- function( input, output, session) {
     # Displaying a table of the computed measures for all selected methods and estimation types
     output$evidence_results <- renderDataTable( {
         cm <- EviRes$predm
-        DT::datatable ( cbind( round( cm[,1:7], 3), cm[, 8:9] ), 
-                        rownames= FALSE, 
+        DT::datatable ( cbind( round( cm[,1:7], 3), cm[, 8:9] ),
+                        rownames= FALSE,
                         options = list(lengthMenu = c(5, 10, 20),
                                        pageLength = 5 ))
     } )
 
-    
-   
-    
+
+
+
     ## Plots of the measures computed: Generating the output list for the plots for each measure computed
     observeEvent(input$GoEvidence,
                  output$EviPlots <- renderUI({
@@ -830,37 +828,37 @@ server <- function( input, output, session) {
             ggplot( CM, aes( x =  Method, y = Precision ) ) +
                          geom_boxplot( aes(fill =  EstimationType )) + theme(legend.position="bottom")
          })
-     
+
          output$EviPlots2 <- renderPlot( {
              CM <- EviRes$predm
              ggplot( CM , aes( x =  Method, y = Recall ) ) +
                  geom_boxplot( aes(fill =  EstimationType )) + theme(legend.position="bottom")
          })
-         
+
          output$EviPlots3 <- renderPlot( {
              CM <- EviRes$predm
              ggplot( CM , aes( x =  Method, y = Specificity ) ) +
                  geom_boxplot( aes(fill =  EstimationType )) + theme(legend.position="bottom")
          })
-         
+
          output$EviPlots4 <- renderPlot( {
              CM <- EviRes$predm
              ggplot( CM , aes( x =  Method, y = Accuracy ) ) +
                  geom_boxplot( aes(fill =  EstimationType )) + theme(legend.position="bottom")
          })
-         
+
          output$EviPlots5 <- renderPlot( {
              CM <- EviRes$predm
              ggplot( CM , aes( x =  Method, y = F1 ) ) +
                  geom_boxplot( aes(fill =  EstimationType )) + theme(legend.position="bottom")
          })
-         
+
          output$EviPlots6 <- renderPlot( {
              CM <- EviRes$predm
              ggplot( CM , aes( x =  Method, y = MissClassification ) ) +
                  geom_boxplot( aes(fill =  EstimationType )) + theme(legend.position="bottom")
          })
-         
+
          output$EviPlots7 <- renderPlot( {
              CM <- EviRes$predm
              ggplot( CM , aes( x =  Method, y = Ece ) ) +
@@ -869,37 +867,33 @@ server <- function( input, output, session) {
     })
 
 
- 
+
 }
 
-# Run the application 
+# Run the application
 shinyApp( ui = ui, server = server)
 
 
 # Plots for each method
 # observeEvent( input$GoClassify,  {
-#  
+#
 #     # fit selected model
 #     switch(input$method,
 #            "LDA" =  {  },
-#            
+#
 #            "QDA" =  { },
-#            
+#
 #            "Logistic regression" = { },
-#            
+#
 #            "Firth logistic regression" = { },
-#            
-#            "Multinomial logistic regression" =  { } , 
-#            "kNN" = { }, 
-#            "SVM" = { }, 
-#            "Random forest" = { }, 
-#            "Decision trees" = { }, 
-#            "Naive Bayes classifier" = { }, 
+#
+#            "Multinomial logistic regression" =  { } ,
+#            "kNN" = { },
+#            "SVM" = { },
+#            "Random forest" = { },
+#            "Decision trees" = { },
+#            "Naive Bayes classifier" = { },
 #            "Neural networks" = { } )
-#     
+#
 # })
 #
-
-
-
-
