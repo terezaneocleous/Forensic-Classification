@@ -1,9 +1,24 @@
 Immediate fixes (for paper deadline):
-- 
-- 
 
+- Data tab: 
 
+1. Currently no default option for dataset selection: make upload data the default. 
+2. If you press the select/upload button without a dataset having been selected, the app exits. There should be a warning message telling the user that a dataset has to be selected or uploaded in order to proceed
+3. The select/upload button should be renamed "Select".
+4. Numerical summaries option doesn't run and returns error message. 
+
+- Classification tab: 
+
+1. Multinomial method doesn't run & returns error messages on alcohol data. 
+2. Both versions of logistic regression run but do not return classification performance results on alcohol data.
+3. "Advanced options" refers to cross-validation information. Better call it "Cross-validation options".
+4. Not possible to run the code on 100% of the dataset as the training dataset. Should be possible with performance measures calculated on the training set.
+5. Classification performance measures given in the result table should be rounded (three decimals?)
+
+- LR tab:
+
+1. App exits if percentages for training, validation and test sets don't add up to 100. Should return error message or rescale automatically.
+2. Classification performance measures given in the result table should be rounded.
 
 Additional fixes for later:
--
 -
