@@ -461,10 +461,12 @@ EvRun <- function( train, valid, test, varXm, varYe, method, method2)
     
     # Get classification measures for test data
     cm <- comp_measures ( actual_class = valid[, varXm], model_prediction = m$class, LR = m$LR)
-
+    
     # Add method and LR estimation method to the return values
-    cmm <- cbind( t(cm), method, method2)
-
+    cmm <- data.frame(  t(cm),  Method = method,  EstimationType = method2 )
+    
+    colnames(cmm)[1:7] <- c( "Precision", "Recall", "Specificity", "Accuracy",  "F1",  "MissClassification",  "Ece")
+    
     return(cmm)
 }
 
